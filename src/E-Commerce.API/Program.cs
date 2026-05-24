@@ -79,6 +79,25 @@ if (app.Environment.IsDevelopment())
     Log.Information("Carts seed data applied successfully");
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        var addresses = app.Services
+            .GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>()
+            .Features
+            .Get<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>()?
+            .Addresses;
+
+        if (addresses is null) return;
+
+        foreach (var url in addresses)
+        {
+            Log.Information("Swagger UI: {Url}/swagger", url.TrimEnd('/'));
+        }
+    });
+}
+
 try
 {
     Log.Information("Starting E-Commerce API...");
